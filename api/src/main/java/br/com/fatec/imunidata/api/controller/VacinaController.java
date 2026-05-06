@@ -2,6 +2,7 @@ package br.com.fatec.imunidata.api.controller;
 
 import br.com.fatec.imunidata.api.model.Vacina;
 import br.com.fatec.imunidata.api.service.VacinaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +30,12 @@ public class VacinaController {
     }
 
     @PostMapping
-    public ResponseEntity<Vacina> salvar(@RequestBody Vacina vacina) {
+    public ResponseEntity<Vacina> salvar(@Valid @RequestBody Vacina vacina) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(vacina));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Vacina> atualizar(@PathVariable int id, @RequestBody Vacina vacina) {
+    public ResponseEntity<Vacina> atualizar(@PathVariable int id, @Valid @RequestBody Vacina vacina) {
         return service.atualizar(id, vacina)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

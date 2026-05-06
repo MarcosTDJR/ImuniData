@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 public class Vacina {
@@ -11,16 +14,29 @@ public class Vacina {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @NotBlank(message = "O município é obrigatório")
     private String municipio;
+
+    @NotBlank(message = "O estado é obrigatório")
     private String estado;
+
+    @NotBlank(message = "O nome da vacina é obrigatório")
     private String vacina;
+
+    @NotBlank(message = "A dose é obrigatória")
     private String dose;
-    private int quantidadeAplicada;
+
+    @NotNull(message = "A quantidade aplicada é obrigatória")
+    @PositiveOrZero(message = "A quantidade aplicada deve ser zero ou maior")
+    private Integer quantidadeAplicada;
+
+    @NotBlank(message = "A data de registro é obrigatória")
     private String dataRegistro;
 
     public Vacina(){}
 
-    public Vacina(String municipio, String estado, String vacina, String dose, int quantidadeAplicada, String dataRegistro  ){
+    public Vacina(String municipio, String estado, String vacina, String dose, Integer quantidadeAplicada, String dataRegistro  ){
         this.municipio = municipio;
         this.estado = estado;
         this.vacina = vacina;
@@ -69,11 +85,11 @@ public class Vacina {
         this.dose = dose;
     }
 
-    public int getQuantidadeAplicada() {
+    public Integer getQuantidadeAplicada() {
         return quantidadeAplicada;
     }
 
-    public void setQuantidadeAplicada(int quantidadeAplicada) {
+    public void setQuantidadeAplicada(Integer quantidadeAplicada) {
         this.quantidadeAplicada = quantidadeAplicada;
     }
 
