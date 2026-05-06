@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/vacina")
@@ -23,29 +24,29 @@ public class VacinaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Vacina> buscarPorId(@PathVariable int id) {
-        return service.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Optional<Vacina>> buscarPorId(@PathVariable int id) {
+        Optional<Vacina> vacina = service.buscarPorId(id);
+        return ResponseEntity.ok(vacina);
     }
 
     @PostMapping
     public ResponseEntity<Vacina> salvar(@Valid @RequestBody Vacina vacina) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(vacina));
+        Vacina novaVacina = service.salvar(vacina);
+        return ResponseEntity.status(201).body(novaVacina);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Vacina> atualizar(@PathVariable int id, @Valid @RequestBody Vacina vacina) {
-        return service.atualizar(id, vacina)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Vacina vacinaAtualizada = service.atualizar(id, vacina).orElse(null);
+        
+        if (vacinaAtualizada == null) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(vacinaAtualizada);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable int id) {
-        if (service.deletar(id)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }
