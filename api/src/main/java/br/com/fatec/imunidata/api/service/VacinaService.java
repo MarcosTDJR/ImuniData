@@ -38,10 +38,7 @@ public class VacinaService {
         });
     }
 
-    public boolean deletar(int id) {
-        return repository.findById(id).map(vacina -> {
-            repository.delete(vacina);
-            return true;
-        }).orElse(false);
+    public void deletar(int id) {
+        repository.deleteById(id);
     }
 }
