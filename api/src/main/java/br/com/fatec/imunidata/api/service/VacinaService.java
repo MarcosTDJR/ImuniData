@@ -28,12 +28,24 @@ public class VacinaService {
 
     public Optional<Vacina> atualizar(int id, Vacina vacinaAtualizada) {
         return repository.findById(id).map(vacina -> {
-            vacina.setMunicipio(vacinaAtualizada.getMunicipio());
-            vacina.setEstado(vacinaAtualizada.getEstado());
-            vacina.setVacina(vacinaAtualizada.getVacina());
-            vacina.setDose(vacinaAtualizada.getDose());
-            vacina.setQuantidadeAplicada(vacinaAtualizada.getQuantidadeAplicada());
-            vacina.setDataRegistro(vacinaAtualizada.getDataRegistro());
+            if (vacinaAtualizada.getMunicipio() != null && !vacinaAtualizada.getMunicipio().isBlank()) {
+                vacina.setMunicipio(vacinaAtualizada.getMunicipio());
+            }
+            if (vacinaAtualizada.getEstado() != null && !vacinaAtualizada.getEstado().isBlank()) {
+                vacina.setEstado(vacinaAtualizada.getEstado());
+            }
+            if (vacinaAtualizada.getVacina() != null && !vacinaAtualizada.getVacina().isBlank()) {
+                vacina.setVacina(vacinaAtualizada.getVacina());
+            }
+            if (vacinaAtualizada.getDose() != null && !vacinaAtualizada.getDose().isBlank()) {
+                vacina.setDose(vacinaAtualizada.getDose());
+            }
+            if (vacinaAtualizada.getQuantidadeAplicada() != null) {
+                vacina.setQuantidadeAplicada(vacinaAtualizada.getQuantidadeAplicada());
+            }
+            if (vacinaAtualizada.getDataRegistro() != null && !vacinaAtualizada.getDataRegistro().isBlank()) {
+                vacina.setDataRegistro(vacinaAtualizada.getDataRegistro());
+            }
             return repository.save(vacina);
         });
     }

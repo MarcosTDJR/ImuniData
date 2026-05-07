@@ -4,12 +4,10 @@ import br.com.fatec.imunidata.api.model.Vacina;
 import br.com.fatec.imunidata.api.service.VacinaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/vacina")
@@ -24,9 +22,10 @@ public class VacinaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Vacina>> buscarPorId(@PathVariable int id) {
-        Optional<Vacina> vacina = service.buscarPorId(id);
-        return ResponseEntity.ok(vacina);
+    public ResponseEntity<Vacina> buscarPorId(@PathVariable int id) {
+        return service.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -35,8 +34,8 @@ public class VacinaController {
         return ResponseEntity.status(201).body(novaVacina);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Vacina> atualizar(@PathVariable int id, @Valid @RequestBody Vacina vacina) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<Vacina> atualizar(@PathVariable int id, @RequestBody Vacina vacina) {
         Vacina vacinaAtualizada = service.atualizar(id, vacina).orElse(null);
         
         if (vacinaAtualizada == null) return ResponseEntity.notFound().build();
