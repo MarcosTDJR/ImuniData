@@ -50,7 +50,11 @@ public class VacinaService {
         });
     }
 
-    public void deletar(int id) {
+    public boolean deletar(int id) {
+        if (!repository.existsById(id)) {
+            return false;
+        }
         repository.deleteById(id);
+        return true;
     }
 }

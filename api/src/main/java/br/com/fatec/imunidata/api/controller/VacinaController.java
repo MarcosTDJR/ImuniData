@@ -45,7 +45,10 @@ public class VacinaController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable int id) {
-        service.deletar(id);
+        boolean removido = service.deletar(id);
+        if (!removido) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.noContent().build();
     }
 }
