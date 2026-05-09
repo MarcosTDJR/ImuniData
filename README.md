@@ -1,69 +1,55 @@
-# Sistema de Monitoramento de Vacinação (ImuniData)
+# ImuniData - Sistema de Monitoramento de Vacinação
 
-## Entrega -> 15/05/2026
+## 1. Problema e Solução
 
-## Objetivo
+**Problema:** A falta de conscientização e a dificuldade de acesso a dados claros sobre a cobertura vacinal dificultam a gestão de saúde pública e a percepção do cidadão sobre a importância da imunização. A dispersão de informações torna complexo o acompanhamento de quais regiões estão com baixa adesão.
 
-- desenvolver solução fullstack (java + react)
-- consulta e analise sobre **cobertura vacinal por região** (sudeste) e **faixa etária**
+**Solução:** O ImuniData resolve este problema através de uma API robusta e simplificada que centraliza o registro e a consulta de doses aplicadas. Ao organizar os dados por município, estado e tipo de vacina, o sistema permite que gestores e usuários visualizem rapidamente a cobertura vacinal, facilitando a identificação de gargalos e promovendo a conscientização sobre a necessidade de atualização do ciclo vacinal de forma intuitiva e eficiente.
 
-## Estrutura técnica requisitada
+## 2. Dicionário de Dados
 
--  Controller
-    -  Retorne `ResponseEntity` com status adequado (200, 201, 404)
-- Service
-    - Lógica de negócio
-    - Leitura do CSV (OpenCSV ou similar) para popular o banco
-- Repository
-    - estende JpaRepository
-    - métodos a mais (findByVacina, findByEstado) 
-- Model
-    - RegistroVacinacao
-        - id, municipio, estado, vacina, dose, quantidadeAplicada, dataRegistro
-- Persistência (Recomendado banco H2)
-- Integração com front
-    - Listar aplicações
-    - Filtrar por tipo de vacina
-    - Exibir resumos por estado
+A entidade principal do sistema é a `Vacina`, que representa um registro de aplicação de imunizante.
 
-## Funcionalidades Esperadas
+| Campo                | Tipo    | Descrição                                                 | Restrições           |
+| :------------------- | :------ | :-------------------------------------------------------- | :------------------- |
+| `id`                 | Integer | Identificador único do registro (gerado automaticamente). | Chave Primária       |
+| `municipio`          | String  | Nome da cidade onde a vacina foi aplicada.                | Obrigatório          |
+| `estado`             | String  | Sigla ou nome do estado da aplicação.                     | Obrigatório          |
+| `vacina`             | String  | Nome do imunizante aplicado (ex: COVID-19, Gripe).        | Obrigatório          |
+| `dose`               | String  | Identificação da dose (ex: 1ª dose, Reforço).             | Obrigatório          |
+| `quantidadeAplicada` | Integer | Quantidade de doses registradas naquela entrada.          | Obrigatório, $\ge 0$ |
+| `dataRegistro`       | String  | Data em que a vacinação foi registrada.                   | Obrigatório          |
 
-### Backend
+## 3. Mapeamento de Rotas (API)
 
-- Carga de dados
-    - método para popular o banco com amostra de dados reais
-    - Recomendações:
-        - ([OpenDataSUS](https://dadosabertos.saude.gov.br/))
-        - Portal da Transparência sobre imunização
-- Consultas especializadas
-    - Filtro por **tipo de vacina**, **estado/região**
-- Gestão completa (CRUD)
-    - cadastro novos registros;
-    - editar dados;
-    - excluir dados incorretos
+Todas as rotas seguem o prefixo `/vacina`.
 
-### Frontend
+| Método     | Endpoint       | Descrição               | Corpo da Requisição       | Retorno Sucesso           | Retorno Erro                |
+| :--------- | :------------- | :---------------------- | :------------------------ | :------------------------ | :-------------------------- |
+| **GET**    | `/vacina`      | Lista todas as vacinas  | N/A                       | `200 OK` + `List<Vacina>` | `500 Internal Server Error` |
+| **GET**    | `/vacina/{id}` | Busca vacina por ID     | N/A                       | `200 OK` + `Vacina`       | `404 Not Found`             |
+| **POST**   | `/vacina`      | Cadastra nova vacina    | JSON da entidade `Vacina` | `201 Created` + `Vacina`  | `400 Bad Request`           |
+| **PATCH**  | `/vacina/{id}` | Atualiza dados parciais | JSON com campos a alterar | `200 OK` + `Vacina`       | `404 Not Found`             |
+| **DELETE** | `/vacina/{id}` | Remove registro         | N/A                       | `204 No Content`          | `404 Not Found`             |
 
-- Dashboard
-    - Tabela organizada com o histórico de vacinação
-- Filtro em tempo real
-- Formulário de inserção
+## 4. Justificativa Técnica
 
-## Documentação
+### Arquitetura MVC (Model-View-Controller)
 
-Entrega do repositório com README contendo:
+O projeto foi implementado seguindo o padrão **MVC**, garantindo a separação de responsabilidades e facilitando a manutenção do código:
 
-- Dicionário de dados (explicação cada campo entidade)
-- Tabela com mapeamento de rotas
-- Print de funcionamento (capturas do front + testes postman)
-- Justificativa técnica (explicar importância do uso do Optional para segurança contra valores nulos)
+- **Model (`Vacina`)**: Define a estrutura de dados e as regras de validação da entidade, isolando a representação dos dados do restante da aplicação.
+- **View (JSON/ResponseEntity)**: Como se trata de uma API REST, a "View" é a representação dos dados em formato JSON retornada ao cliente através de `ResponseEntity`, permitindo que diferentes front-ends consumam a mesma lógica.
+- **Controller (`VacinaController`)**: Atua como a camada de entrada, gerenciando as requisições HTTP, validando os inputs e direcionando as chamadas para a camada de serviço.
+- **Service (`VacinaService`)**: Camada de lógica de negócio, onde residem as regras de atualização e processamento, evitando que o Controller tenha conhecimento de como os dados são manipulados no banco.
 
-## Apresentação
+### Segurança contra Valores Nulos com `Optional`
 
-- Explicação código (4min) 
-    - mostrar organização de pastas e uso de anotações '@'
-- Demonstração prática (7min)
-    - cadastrar pelo front
-    - mostrar persistência dos dados
-- Tratamento de erro (4min)
-    - mostrar 404 ao buscar ID inexistente
+Para evitar o erro clássico `NullPointerException` e tornar o código mais expressivo, foi utilizado o tipo `Optional<T>` em métodos de busca e atualização:
+
+- **Prevenção de Erros**: Em vez de retornar `null` quando um registro não é encontrado, o método retorna um `Optional`. Isso obriga o desenvolvedor a tratar explicitamente a ausência do valor.
+- **Fluidez**: O uso de métodos como `.map()` e `.orElseGet()` no Controller permite transformar a presença ou ausência de um objeto diretamente em respostas HTTP (`200 OK` ou `404 Not Found`) de forma concisa e segura.
+
+### Tratamento de Erros Centralizado
+
+A implementação do `TratadorDeErros` utilizando `@RestControllerAdvice` permite que a API capture exceções de validação (`MethodArgumentNotValidException`) de forma global. Isso garante que o cliente receba sempre uma resposta padronizada e amigável em caso de erro de preenchimento (400 Bad Request), independentemente de qual endpoint foi acessado.
