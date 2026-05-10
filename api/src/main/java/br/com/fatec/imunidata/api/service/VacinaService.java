@@ -52,9 +52,6 @@ public class VacinaService {
             if (vacinaAtualizada.getIdade_paciente() != null) {
                 vacina.setIdade_paciente(vacinaAtualizada.getIdade_paciente());
             }
-            if (vacinaAtualizada.getQuantidadeAplicada() != null) {
-                vacina.setQuantidadeAplicada(vacinaAtualizada.getQuantidadeAplicada());
-            }
             if (vacinaAtualizada.getData_registro() != null && !vacinaAtualizada.getData_registro().isBlank()) {
                 vacina.setData_registro(vacinaAtualizada.getData_registro());
             }

@@ -41,16 +41,12 @@ public class Vacina {
     @Positive(message = "A idade do paciente deve ser maior que zero")
     private Integer idade_paciente;
 
-    @NotNull(message = "A quantidade aplicada é obrigatória")
-    @PositiveOrZero(message = "A quantidade aplicada deve ser zero ou maior")
-    private Integer quantidadeAplicada;
-
     @NotBlank(message = "A data de registro é obrigatória")
     private String data_registro;
 
     public Vacina(){}
 
-    public Vacina(String municipio, String estado, String estado_nome, String vacina, String vacina_sigla, String dose, String sexo_paciente, Integer idade_paciente, Integer quantidadeAplicada, String data_registro  ){
+    public Vacina(String municipio, String estado, String estado_nome, String vacina, String vacina_sigla, String dose, String sexo_paciente, Integer idade_paciente, String data_registro  ){
         this.municipio = municipio;
         this.estado = estado;
         this.estado_nome = estado_nome;
@@ -59,7 +55,6 @@ public class Vacina {
         this.dose = dose;
         this.sexo_paciente = sexo_paciente;
         this.idade_paciente = idade_paciente;
-        this.quantidadeAplicada = quantidadeAplicada;
         this.data_registro = data_registro;
     }
 
@@ -133,14 +128,6 @@ public class Vacina {
 
     public void setIdade_paciente(Integer idade_paciente) {
         this.idade_paciente = idade_paciente;
-    }
-
-    public Integer getQuantidadeAplicada() {
-        return quantidadeAplicada;
-    }
-
-    public void setQuantidadeAplicada(Integer quantidadeAplicada) {
-        this.quantidadeAplicada = quantidadeAplicada;
     }
 
     public String getData_registro() {
