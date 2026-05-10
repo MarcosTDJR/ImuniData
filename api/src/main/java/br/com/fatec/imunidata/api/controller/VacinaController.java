@@ -2,6 +2,7 @@ package br.com.fatec.imunidata.api.controller;
 
 import br.com.fatec.imunidata.api.model.Vacina;
 import br.com.fatec.imunidata.api.service.VacinaService;
+import br.com.fatec.imunidata.api.service.VacinaImportService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,9 @@ public class VacinaController {
 
     @Autowired
     private VacinaService service;
+
+    @Autowired
+    private VacinaImportService importService;
 
     @GetMapping
     public ResponseEntity<List<Vacina>> listarTodas() {
@@ -50,5 +54,11 @@ public class VacinaController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/importacao/2026")
+    public ResponseEntity<String> importData() {
+        int count = importService.importVacinas();
+        return ResponseEntity.ok("Importação de dados completada com sucesso. Total de registros: " + count);
     }
 }
