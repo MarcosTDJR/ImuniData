@@ -34,17 +34,29 @@ public class VacinaService {
             if (vacinaAtualizada.getEstado() != null && !vacinaAtualizada.getEstado().isBlank()) {
                 vacina.setEstado(vacinaAtualizada.getEstado());
             }
+            if (vacinaAtualizada.getEstado_nome() != null && !vacinaAtualizada.getEstado_nome().isBlank()) {
+                vacina.setEstado_nome(vacinaAtualizada.getEstado_nome());
+            }
             if (vacinaAtualizada.getVacina() != null && !vacinaAtualizada.getVacina().isBlank()) {
                 vacina.setVacina(vacinaAtualizada.getVacina());
+            }
+            if (vacinaAtualizada.getVacina_sigla() != null && !vacinaAtualizada.getVacina_sigla().isBlank()) {
+                vacina.setVacina_sigla(vacinaAtualizada.getVacina_sigla());
             }
             if (vacinaAtualizada.getDose() != null && !vacinaAtualizada.getDose().isBlank()) {
                 vacina.setDose(vacinaAtualizada.getDose());
             }
+            if (vacinaAtualizada.getSexo_paciente() != null && !vacinaAtualizada.getSexo_paciente().isBlank()) {
+                vacina.setSexo_paciente(vacinaAtualizada.getSexo_paciente());
+            }
+            if (vacinaAtualizada.getIdade_paciente() != null) {
+                vacina.setIdade_paciente(vacinaAtualizada.getIdade_paciente());
+            }
             if (vacinaAtualizada.getQuantidadeAplicada() != null) {
                 vacina.setQuantidadeAplicada(vacinaAtualizada.getQuantidadeAplicada());
             }
-            if (vacinaAtualizada.getDataRegistro() != null && !vacinaAtualizada.getDataRegistro().isBlank()) {
-                vacina.setDataRegistro(vacinaAtualizada.getDataRegistro());
+            if (vacinaAtualizada.getData_registro() != null && !vacinaAtualizada.getData_registro().isBlank()) {
+                vacina.setData_registro(vacinaAtualizada.getData_registro());
             }
             return repository.save(vacina);
         });

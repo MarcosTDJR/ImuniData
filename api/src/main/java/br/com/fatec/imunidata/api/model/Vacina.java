@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
@@ -21,28 +22,45 @@ public class Vacina {
     @NotBlank(message = "O estado é obrigatório")
     private String estado;
 
+    @NotBlank(message = "O nome do estado é obrigatório")
+    private String estado_nome;
+
     @NotBlank(message = "O nome da vacina é obrigatório")
     private String vacina;
 
+    @NotBlank(message = "A sigla da vacina é obrigatória")
+    private String vacina_sigla;
+
     @NotBlank(message = "A dose é obrigatória")
     private String dose;
+
+    @NotBlank(message = "O sexo do paciente é obrigatório")
+    private String sexo_paciente;
+
+    @NotNull(message = "A idade do paciente é obrigatória")
+    @Positive(message = "A idade do paciente deve ser maior que zero")
+    private Integer idade_paciente;
 
     @NotNull(message = "A quantidade aplicada é obrigatória")
     @PositiveOrZero(message = "A quantidade aplicada deve ser zero ou maior")
     private Integer quantidadeAplicada;
 
     @NotBlank(message = "A data de registro é obrigatória")
-    private String dataRegistro;
+    private String data_registro;
 
     public Vacina(){}
 
-    public Vacina(String municipio, String estado, String vacina, String dose, Integer quantidadeAplicada, String dataRegistro  ){
+    public Vacina(String municipio, String estado, String estado_nome, String vacina, String vacina_sigla, String dose, String sexo_paciente, Integer idade_paciente, Integer quantidadeAplicada, String data_registro  ){
         this.municipio = municipio;
         this.estado = estado;
+        this.estado_nome = estado_nome;
         this.vacina = vacina;
+        this.vacina_sigla = vacina_sigla;
         this.dose = dose;
+        this.sexo_paciente = sexo_paciente;
+        this.idade_paciente = idade_paciente;
         this.quantidadeAplicada = quantidadeAplicada;
-        this.dataRegistro = dataRegistro;
+        this.data_registro = data_registro;
     }
 
     public int getId() {
@@ -69,12 +87,28 @@ public class Vacina {
         this.estado = estado;
     }
 
+    public String getEstado_nome() {
+        return estado_nome;
+    }
+
+    public void setEstado_nome(String estado_nome) {
+        this.estado_nome = estado_nome;
+    }
+
     public String getVacina() {
         return vacina;
     }
 
     public void setVacina(String vacina) {
         this.vacina = vacina;
+    }
+
+    public String getVacina_sigla() {
+        return vacina_sigla;
+    }
+
+    public void setVacina_sigla(String vacina_sigla) {
+        this.vacina_sigla = vacina_sigla;
     }
 
     public String getDose() {
@@ -85,6 +119,22 @@ public class Vacina {
         this.dose = dose;
     }
 
+    public String getSexo_paciente() {
+        return sexo_paciente;
+    }
+
+    public void setSexo_paciente(String sexo_paciente) {
+        this.sexo_paciente = sexo_paciente;
+    }
+
+    public Integer getIdade_paciente() {
+        return idade_paciente;
+    }
+
+    public void setIdade_paciente(Integer idade_paciente) {
+        this.idade_paciente = idade_paciente;
+    }
+
     public Integer getQuantidadeAplicada() {
         return quantidadeAplicada;
     }
@@ -93,11 +143,11 @@ public class Vacina {
         this.quantidadeAplicada = quantidadeAplicada;
     }
 
-    public String getDataRegistro() {
-        return dataRegistro;
+    public String getData_registro() {
+        return data_registro;
     }
 
-    public void setDataRegistro(String dataRegistro) {
-        this.dataRegistro = dataRegistro;
+    public void setData_registro(String data_registro) {
+        this.data_registro = data_registro;
     }
 }
