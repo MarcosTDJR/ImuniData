@@ -24,7 +24,15 @@ public class VacinaImportService {
     @Transactional
     public int importVacinas() {
         List<VacinaApiDTO> apiData = vacinaApiClient.fetchVacinas();
+        return salvarEmLote(apiData);
+    }
 
+    @Transactional
+    public int importVacinasManuais(List<VacinaApiDTO> apiData) {
+        return salvarEmLote(apiData);
+    }
+
+    private int salvarEmLote(List<VacinaApiDTO> apiData) {
         List<Vacina> vacinas = apiData.stream().map(this::mapToEntity).collect(Collectors.toList());
 
         vacinaRepository.saveAll(vacinas);

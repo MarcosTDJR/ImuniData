@@ -1,6 +1,7 @@
 package br.com.fatec.imunidata.api.controller;
 
 import br.com.fatec.imunidata.api.model.Vacina;
+import br.com.fatec.imunidata.api.model.dto.VacinaApiDTO;
 import br.com.fatec.imunidata.api.service.VacinaService;
 import br.com.fatec.imunidata.api.service.VacinaImportService;
 import jakarta.validation.Valid;
@@ -60,5 +61,12 @@ public class VacinaController {
     public ResponseEntity<String> importData() {
         int count = importService.importVacinas();
         return ResponseEntity.ok("Importação de dados completada com sucesso. Total de registros: " + count);
+    }
+
+    @PostMapping("/importacao/manual")
+    public ResponseEntity<String> importarManual(@RequestBody List<VacinaApiDTO> vacinasApi) {
+        int count = importService.importVacinasManuais(vacinasApi);
+        return ResponseEntity.status(201)
+                .body("Importação manual completada com sucesso. Total de registros: " + count);
     }
 }
