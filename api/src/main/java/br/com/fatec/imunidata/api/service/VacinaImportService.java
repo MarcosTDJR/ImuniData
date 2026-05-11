@@ -1,7 +1,7 @@
 package br.com.fatec.imunidata.api.service;
 
 import br.com.fatec.imunidata.api.infra.client.VacinaApiClient;
-import br.com.fatec.imunidata.api.model.Vacina;
+import br.com.fatec.imunidata.api.model.RegistroVacinacao;
 import br.com.fatec.imunidata.api.model.dto.VacinaApiDTO;
 import br.com.fatec.imunidata.api.repository.VacinaRepository;
 import org.springframework.stereotype.Service;
@@ -33,15 +33,15 @@ public class VacinaImportService {
     }
 
     private int salvarEmLote(List<VacinaApiDTO> apiData) {
-        List<Vacina> vacinas = apiData.stream().map(this::mapToEntity).collect(Collectors.toList());
+        List<RegistroVacinacao> vacinas = apiData.stream().map(this::mapToEntity).collect(Collectors.toList());
 
         vacinaRepository.saveAll(vacinas);
 
         return vacinas.size();
     }
 
-    private Vacina mapToEntity(VacinaApiDTO dto) {
-        Vacina vacina = new Vacina();
+    private RegistroVacinacao mapToEntity(VacinaApiDTO dto) {
+        RegistroVacinacao vacina = new RegistroVacinacao();
         vacina.setData_registro(dto.dataEntradaRnds());
         vacina.setVacina(dto.descricaoVacina());
         vacina.setEstado(dto.siglaUfEstabelecimento());

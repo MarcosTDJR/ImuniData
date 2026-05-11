@@ -1,6 +1,6 @@
 package br.com.fatec.imunidata.api.service;
 
-import br.com.fatec.imunidata.api.model.Vacina;
+import br.com.fatec.imunidata.api.model.RegistroVacinacao;
 import br.com.fatec.imunidata.api.repository.VacinaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,19 +14,19 @@ public class VacinaService {
     @Autowired
     private VacinaRepository repository;
 
-    public List<Vacina> listarTodas() {
+    public List<RegistroVacinacao> listarTodas() {
         return repository.findAll();
     }
 
-    public Optional<Vacina> buscarPorId(int id) {
+    public Optional<RegistroVacinacao> buscarPorId(int id) {
         return repository.findById(id);
     }
 
-    public Vacina salvar(Vacina vacina) {
+    public RegistroVacinacao salvar(RegistroVacinacao vacina) {
         return repository.save(vacina);
     }
 
-    public Optional<Vacina> atualizar(int id, Vacina vacinaAtualizada) {
+    public Optional<RegistroVacinacao> atualizar(int id, RegistroVacinacao vacinaAtualizada) {
         return repository.findById(id).map(vacina -> {
             if (vacinaAtualizada.getMunicipio() != null && !vacinaAtualizada.getMunicipio().isBlank()) {
                 vacina.setMunicipio(vacinaAtualizada.getMunicipio());
@@ -65,5 +65,17 @@ public class VacinaService {
         }
         repository.deleteById(id);
         return true;
+    }
+
+    public List<RegistroVacinacao> buscarPorVacina(String vacina) {
+        return repository.findByVacina(vacina);
+    }
+
+    public List<RegistroVacinacao> buscarPorEstado(String estado) {
+        return repository.findByEstado(estado);
+    }
+
+    public List<RegistroVacinacao> buscarPorSexo(String sexo) {
+        return repository.findBySexoPaciente(sexo);
     }
 }

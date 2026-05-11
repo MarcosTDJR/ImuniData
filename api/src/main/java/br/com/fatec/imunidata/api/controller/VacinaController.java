@@ -1,7 +1,8 @@
 package br.com.fatec.imunidata.api.controller;
 
-import br.com.fatec.imunidata.api.model.Vacina;
+import br.com.fatec.imunidata.api.model.RegistroVacinacao;
 import br.com.fatec.imunidata.api.model.dto.VacinaApiDTO;
+import br.com.fatec.imunidata.api.model.dto.ImportacaoResponse;
 import br.com.fatec.imunidata.api.service.VacinaService;
 import br.com.fatec.imunidata.api.service.VacinaImportService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -22,26 +24,26 @@ public class VacinaController {
     private VacinaImportService importService;
 
     @GetMapping
-    public ResponseEntity<List<Vacina>> listarTodas() {
+    public ResponseEntity<List<RegistroVacinacao>> listarTodas() {
         return ResponseEntity.ok(service.listarTodas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Vacina> buscarPorId(@PathVariable int id) {
+    public ResponseEntity<RegistroVacinacao> buscarPorId(@PathVariable int id) {
         return service.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Vacina> salvar(@Valid @RequestBody Vacina vacina) {
-        Vacina novaVacina = service.salvar(vacina);
+    public ResponseEntity<RegistroVacinacao> salvar(@Valid @RequestBody RegistroVacinacao vacina) {
+        RegistroVacinacao novaVacina = service.salvar(vacina);
         return ResponseEntity.status(201).body(novaVacina);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Vacina> atualizar(@PathVariable int id, @RequestBody Vacina vacina) {
-        Vacina vacinaAtualizada = service.atualizar(id, vacina).orElse(null);
+    public ResponseEntity<RegistroVacinacao> atualizar(@PathVariable int id, @RequestBody RegistroVacinacao vacina) {
+        RegistroVacinacao vacinaAtualizada = service.atualizar(id, vacina).orElse(null);
         
         if (vacinaAtualizada == null) return ResponseEntity.notFound().build();
 
@@ -58,15 +60,44 @@ public class VacinaController {
     }
 
     @GetMapping("/importacao/2026")
-    public ResponseEntity<String> importData() {
+    public ResponseEntity<ImportacaoResponse> importData() {
         int count = importService.importVacinas();
-        return ResponseEntity.ok("Importação de dados completada com sucesso. Total de registros: " + count);
+        ImportacaoResponse response = new ImportacaoResponse(
+                "Importação de dados da API externa completada com sucesso",
+                count,
+                LocalDateTime.now(),
+                "sucesso"
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/importacao/manual")
-    public ResponseEntity<String> importarManual(@RequestBody List<VacinaApiDTO> vacinasApi) {
+    public ResponseEntity<ImportacaoResponse> importarManual(@RequestBody List<VacinaApiDTO> vacinasApi) {
         int count = importService.importVacinasManuais(vacinasApi);
-        return ResponseEntity.status(201)
-                .body("Importação manual completada com sucesso. Total de registros: " + count);
+        ImportacaoResponse response = new ImportacaoResponse(
+                "Importação manual de registros completada com sucesso",
+                count,
+                LocalDateTime.now(),
+                "sucesso"
+        );
+        return ResponseEntity.status(201).body(response);
+    }
+
+    @GetMapping("/filtro/sexo/{sexo}")
+    public ResponseEntity<List<RegistroVacinacao>> filtrarPorSexo(@PathVariable String sexo) {
+        List<RegistroVacinacao> registros = service.buscarPorSexo(sexo);
+        if (registros.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(registros);
+    }
+
+    @GetMapping("/filtro/estado/{sigla}")
+    public ResponseEntity<List<RegistroVacinacao>> filtrarPorEstado(@PathVariable String sigla) {
+        List<RegistroVacinacao> registros = service.buscarPorEstado(sigla);
+        if (registros.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(registros);
     }
 }
