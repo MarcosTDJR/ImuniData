@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/registros-vacinacao")
+@RequestMapping("/api/registros-vacinacao")
 public class VacinaController {
 
     @Autowired
