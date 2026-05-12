@@ -3,6 +3,9 @@ package br.com.fatec.imunidata.api.service;
 import br.com.fatec.imunidata.api.model.RegistroVacinacao;
 import br.com.fatec.imunidata.api.repository.VacinaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +20,13 @@ public class VacinaService {
 
     public List<RegistroVacinacao> listarTodas() {
         return repository.findAll();
+    }
+
+    public List<RegistroVacinacao> listarPaginado(int page, int size) {
+        int paginaSegura = Math.max(page, 0);
+        int tamanhoSeguro = Math.max(1, Math.min(size, 5000));
+        Pageable pageable = PageRequest.of(paginaSegura, tamanhoSeguro, Sort.by("id").ascending());
+        return repository.findAll(pageable).getContent();
     }
 
     public Optional<RegistroVacinacao> buscarPorId(int id) {

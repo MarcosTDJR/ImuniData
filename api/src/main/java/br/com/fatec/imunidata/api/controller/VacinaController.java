@@ -24,8 +24,10 @@ public class VacinaController {
     private VacinaImportService importService;
 
     @GetMapping
-    public ResponseEntity<List<RegistroVacinacao>> listarTodas() {
-        return ResponseEntity.ok(service.listarTodas());
+    public ResponseEntity<List<RegistroVacinacao>> listarTodas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5000") int size) {
+        return ResponseEntity.ok(service.listarPaginado(page, size));
     }
 
     @GetMapping("/{id}")

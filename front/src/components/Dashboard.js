@@ -5,13 +5,18 @@ import Filters from './Filters';
 import vacinacaoService from '../services/vacinacaoService';
 import '../styles/dashboard.css';
 
+const PAGE_SIZE = 5000;
+
 const Dashboard = () => {
   const [registros, setRegistros] = useState([]);
   const [filteredRegistros, setFilteredRegistros] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [activeTab, setActiveTab] = useState('listing');
   const [selectedRegistro, setSelectedRegistro] = useState(null);
   const [currentFilters, setCurrentFilters] = useState({});
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [stats, setStats] = useState({
     totalRegistros: 0,
     totalVacinas: 0,
@@ -19,33 +24,47 @@ const Dashboard = () => {
   });
   const [message, setMessage] = useState(null);
 
+  const atualizarStats = (dados) => {
+    const totalVacinas = new Set(dados.map((r) => r.vacina)).size;
+    const totalEstados = new Set(dados.map((r) => r.estado)).size;
+    setStats({
+      totalRegistros: dados.length,
+      totalVacinas,
+      totalEstados,
+    });
+  };
+
   // Carrega os dados iniciais
   useEffect(() => {
-    carregarDados();
+    const carregarDadosIniciais = async () => {
+      setLoading(true);
+      try {
+        const dados = await vacinacaoService.listar({ page: 0, size: PAGE_SIZE });
+        setRegistros(dados);
+        setFilteredRegistros(dados);
+        setPage(0);
+        setHasMore(dados.length === PAGE_SIZE);
+
+        const totalVacinas = new Set(dados.map((r) => r.vacina)).size;
+        const totalEstados = new Set(dados.map((r) => r.estado)).size;
+        setStats({
+          totalRegistros: dados.length,
+          totalVacinas,
+          totalEstados,
+        });
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        setMessage({
+          texto: 'Erro ao carregar dados. Verifique se o backend está em execução.',
+          tipo: 'error',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarDadosIniciais();
   }, []);
-
-  const carregarDados = async () => {
-    setLoading(true);
-    try {
-      const dados = await vacinacaoService.listar();
-      setRegistros(dados);
-      setFilteredRegistros(dados);
-
-      // Calcula estatísticas
-      const totalVacinas = new Set(dados.map((r) => r.vacina)).size;
-      const totalEstados = new Set(dados.map((r) => r.estado)).size;
-      setStats({
-        totalRegistros: dados.length,
-        totalVacinas,
-        totalEstados,
-      });
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      mostrarMensagem('Erro ao carregar dados. Verifique se o backend está em execução.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const mostrarMensagem = (texto, tipo = 'info') => {
     setMessage({ texto, tipo });
@@ -91,6 +110,30 @@ const Dashboard = () => {
     setFilteredRegistros(registros);
   };
 
+  const filtrosAtivos = Boolean(currentFilters.vacina || currentFilters.estado || currentFilters.municipio);
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMore || filtrosAtivos) return;
+
+    setLoadingMore(true);
+    try {
+      const proximaPagina = page + 1;
+      const novosDados = await vacinacaoService.listar({ page: proximaPagina, size: PAGE_SIZE });
+      const dadosAtualizados = [...registros, ...novosDados];
+
+      setRegistros(dadosAtualizados);
+      setFilteredRegistros(dadosAtualizados);
+      setPage(proximaPagina);
+      setHasMore(novosDados.length === PAGE_SIZE);
+      atualizarStats(dadosAtualizados);
+    } catch (error) {
+      console.error('Erro ao carregar mais dados:', error);
+      mostrarMensagem('Erro ao carregar mais dados.', 'error');
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
   const handleEdit = (registro) => {
     setSelectedRegistro(registro);
     setActiveTab('form');
@@ -100,8 +143,12 @@ const Dashboard = () => {
   const handleDelete = async (id) => {
     try {
       await vacinacaoService.deletar(id);
-      setRegistros(registros.filter((r) => r.id !== id));
-      setFilteredRegistros(filteredRegistros.filter((r) => r.id !== id));
+      const registrosAtualizados = registros.filter((r) => r.id !== id);
+      const filtradosAtualizados = filteredRegistros.filter((r) => r.id !== id);
+
+      setRegistros(registrosAtualizados);
+      setFilteredRegistros(filtradosAtualizados);
+      atualizarStats(registrosAtualizados);
       mostrarMensagem('Registro deletado com sucesso!', 'success');
     } catch (error) {
       console.error('Erro ao deletar registro:', error);
@@ -114,16 +161,26 @@ const Dashboard = () => {
       if (selectedRegistro) {
         // Atualizar
         const registroAtualizado = await vacinacaoService.atualizar(selectedRegistro.id, formData);
-        setRegistros(registros.map((r) => (r.id === selectedRegistro.id ? registroAtualizado : r)));
-        setFilteredRegistros(
-          filteredRegistros.map((r) => (r.id === selectedRegistro.id ? registroAtualizado : r))
+        const registrosAtualizados = registros.map((r) =>
+          (r.id === selectedRegistro.id ? registroAtualizado : r)
         );
+        const filtradosAtualizados = filteredRegistros.map((r) =>
+          (r.id === selectedRegistro.id ? registroAtualizado : r)
+        );
+
+        setRegistros(registrosAtualizados);
+        setFilteredRegistros(filtradosAtualizados);
+        atualizarStats(registrosAtualizados);
         mostrarMensagem('Registro atualizado com sucesso!', 'success');
       } else {
         // Criar
         const novoRegistro = await vacinacaoService.criar(formData);
-        setRegistros([...registros, novoRegistro]);
-        setFilteredRegistros([...filteredRegistros, novoRegistro]);
+        const registrosAtualizados = [...registros, novoRegistro];
+        const filtradosAtualizados = [...filteredRegistros, novoRegistro];
+
+        setRegistros(registrosAtualizados);
+        setFilteredRegistros(filtradosAtualizados);
+        atualizarStats(registrosAtualizados);
         mostrarMensagem('Registro criado com sucesso!', 'success');
       }
 
@@ -203,6 +260,23 @@ const Dashboard = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />
+
+              <div className="load-more-container">
+                {!filtrosAtivos && hasMore && (
+                  <button
+                    className="btn-load-more"
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? 'Carregando...' : 'Carregar mais 5.000 registros'}
+                  </button>
+                )}
+                {filtrosAtivos && (
+                  <small className="load-more-note">
+                    Para carregar mais dados, limpe os filtros ativos.
+                  </small>
+                )}
+              </div>
             </div>
           </div>
         </div>

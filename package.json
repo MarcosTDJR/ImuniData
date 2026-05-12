@@ -1,0 +1,11 @@
+{
+  "name": "imunidata-root",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix front start",
+    "build": "npm --prefix front run build",
+    "start:front": "npm --prefix front start",
+    "start:api": "cd api && ./mvnw spring-boot:run",
+    "start:all": "sh -c 'npm run start:api & npm run start:front'"
+  }
+}

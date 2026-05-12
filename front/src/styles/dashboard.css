@@ -109,3 +109,36 @@
   font-size: 48px;
   margin-bottom: 20px;
 }
+
+.load-more-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-load-more {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background: #0b7285;
+  transition: opacity 0.2s ease;
+}
+
+.btn-load-more:hover {
+  opacity: 0.9;
+}
+
+.btn-load-more:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.load-more-note {
+  color: #666;
+  font-size: 12px;
+}

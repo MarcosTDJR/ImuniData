@@ -7,9 +7,11 @@ const vacinacaoService = {
   /**
    * Lista todos os registros de vacinação
    */
-  listar: async () => {
+  listar: async ({ page = 0, size = 5000 } = {}) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/registros-vacinacao`);
+      const response = await axios.get(`${API_BASE_URL}/registros-vacinacao`, {
+        params: { page, size },
+      });
       return response.data;
     } catch (error) {
       console.error('Erro ao listar registros:', error);

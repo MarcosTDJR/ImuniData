@@ -37,24 +37,28 @@ const VaccinationTable = ({ data, loading, onEdit, onDelete }) => {
               <th>Estado</th>
               <th>Vacina</th>
               <th>Dose</th>
-              <th>Quantidade</th>
+              <th>Idade</th>
               <th>Data Registro</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((registro) => (
-              <tr key={registro.id}>
-                <td>#{registro.id}</td>
-                <td>{registro.municipio}</td>
-                <td>{registro.estado}</td>
-                <td>
-                  <span className="vaccine-badge">{registro.vacina}</span>
-                </td>
-                <td>{registro.dose}</td>
-                <td>{registro.quantidadeAplicada}</td>
-                <td>{new Date(registro.dataRegistro).toLocaleDateString('pt-BR')}</td>
-                <td>
+            {data.map((registro) => {
+              const dataRegistro = registro.data_registro || registro.dataRegistro;
+              const idade = registro.idade_paciente ?? registro.idadePaciente;
+
+              return (
+                <tr key={registro.id}>
+                  <td>#{registro.id}</td>
+                  <td>{registro.municipio}</td>
+                  <td>{registro.estado}</td>
+                  <td>
+                    <span className="vaccine-badge">{registro.vacina}</span>
+                  </td>
+                  <td>{registro.dose}</td>
+                  <td>{idade ?? '-'}</td>
+                  <td>{dataRegistro ? new Date(dataRegistro).toLocaleDateString('pt-BR') : '-'}</td>
+                  <td>
                   <div className="action-buttons">
                     <button
                       className="btn-sm btn-edit"
@@ -71,9 +75,10 @@ const VaccinationTable = ({ data, loading, onEdit, onDelete }) => {
                       🗑 Deletar
                     </button>
                   </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
