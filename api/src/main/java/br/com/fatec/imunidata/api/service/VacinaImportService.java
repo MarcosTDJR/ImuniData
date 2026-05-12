@@ -42,15 +42,15 @@ public class VacinaImportService {
 
     private RegistroVacinacao mapToEntity(VacinaApiDTO dto) {
         RegistroVacinacao vacina = new RegistroVacinacao();
-        vacina.setData_registro(dto.dataEntradaRnds());
-        vacina.setVacina(dto.descricaoVacina());
-        vacina.setEstado(dto.siglaUfEstabelecimento());
-        vacina.setEstado_nome(dto.nomeUfEstabelecimento());
-        vacina.setVacina_sigla(dto.siglaVacina());
-        vacina.setSexo_paciente(dto.tipoSexoPaciente());
-        vacina.setIdade_paciente(dto.numeroIdadePaciente());
-        vacina.setMunicipio(dto.nomeMunicipioEstabelecimento());
-        vacina.setDose(dto.descricaoDoseVacina());
+        vacina.setData_registro(dto.getDataEntradaRnds());
+        vacina.setVacina(dto.getDescricaoVacina());
+        vacina.setEstado(dto.getSiglaUfEstabelecimento());
+        vacina.setEstado_nome(dto.getNomeUfEstabelecimento());
+        vacina.setVacina_sigla(dto.getSiglaVacina());
+        vacina.setSexo_paciente(dto.getTipoSexoPaciente());
+        vacina.setIdade_paciente(dto.getNumeroIdadePaciente());
+        vacina.setMunicipio(dto.getNomeMunicipioEstabelecimento());
+        vacina.setDose(dto.getDescricaoDoseVacina());
         return vacina;
     }
 }

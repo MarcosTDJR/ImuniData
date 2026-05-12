@@ -29,11 +29,69 @@ public class TratadorDeErros {
         return ResponseEntity.badRequest().body(resposta);
     }
 
-    private record RespostaErroCustomizada(int status_code, List<DadosErroValidacao> errors, String message) {}
+    public static class RespostaErroCustomizada {
+        private int status_code;
+        private List<DadosErroValidacao> errors;
+        private String message;
 
-    private record DadosErroValidacao(String campo, String mensagem) {
+        public RespostaErroCustomizada(int status_code, List<DadosErroValidacao> errors, String message) {
+            this.status_code = status_code;
+            this.errors = errors;
+            this.message = message;
+        }
+
+        public int getStatus_code() {
+            return status_code;
+        }
+
+        public void setStatus_code(int status_code) {
+            this.status_code = status_code;
+        }
+
+        public List<DadosErroValidacao> getErrors() {
+            return errors;
+        }
+
+        public void setErrors(List<DadosErroValidacao> errors) {
+            this.errors = errors;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+
+    public static class DadosErroValidacao {
+        private String campo;
+        private String mensagem;
+
+        public DadosErroValidacao(String campo, String mensagem) {
+            this.campo = campo;
+            this.mensagem = mensagem;
+        }
+
         public DadosErroValidacao(FieldError erro) {
             this(erro.getField(), erro.getDefaultMessage());
+        }
+
+        public String getCampo() {
+            return campo;
+        }
+
+        public void setCampo(String campo) {
+            this.campo = campo;
+        }
+
+        public String getMensagem() {
+            return mensagem;
+        }
+
+        public void setMensagem(String mensagem) {
+            this.mensagem = mensagem;
         }
     }
 }

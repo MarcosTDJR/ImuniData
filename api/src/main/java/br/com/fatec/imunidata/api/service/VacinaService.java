@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VacinaService {
@@ -77,5 +78,33 @@ public class VacinaService {
 
     public List<RegistroVacinacao> buscarPorSexo(String sexo) {
         return repository.findBySexoPaciente(sexo);
+    }
+
+    public List<RegistroVacinacao> buscarPorMunicipio(String municipio) {
+        return repository.findByMunicipio(municipio);
+    }
+
+    public List<Object> obterResumoPorEstado() {
+        List<RegistroVacinacao> registros = repository.findAll();
+        return registros.stream()
+                .collect(Collectors.groupingBy(
+                        RegistroVacinacao::getEstado_nome,
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .map(entry -> java.util.Map.of("estado", entry.getKey(), "total", entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Object> obterResumoPorVacina() {
+        List<RegistroVacinacao> registros = repository.findAll();
+        return registros.stream()
+                .collect(Collectors.groupingBy(
+                        RegistroVacinacao::getVacina,
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .map(entry -> java.util.Map.of("vacina", entry.getKey(), "total", entry.getValue()))
+                .collect(Collectors.toList());
     }
 }

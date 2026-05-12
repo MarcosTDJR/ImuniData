@@ -13,6 +13,8 @@ public interface VacinaRepository extends JpaRepository<RegistroVacinacao, Integ
 
 	List<RegistroVacinacao> findByEstado(String estado);
 
+	List<RegistroVacinacao> findByMunicipio(String municipio);
+
 	@Query("select r from RegistroVacinacao r where r.sexo_paciente = :sexo")
 	List<RegistroVacinacao> findBySexoPaciente(@Param("sexo") String sexo);
 }
